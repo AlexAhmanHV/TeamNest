@@ -16,6 +16,10 @@
 /public/build
 /public/hot
 /public/storage
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore
+/database/*.sqlite
+/storage/framework/views/*.php
 /storage/*.key
 /storage/pail
 /vendor

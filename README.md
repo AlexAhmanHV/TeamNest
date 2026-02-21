@@ -1,59 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Workspace Projects
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Workspace Projects is a portfolio-grade Laravel Mini-SaaS for managing projects and tasks inside isolated workspaces.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Laravel 12 + Breeze (Blade + Tailwind) authentication
+- Workspace-scoped multi-tenancy with session-based current workspace
+- Workspace RBAC (`admin`, `member`)
+- Invitation flow with expiring token links and secure token hashing
+- Queued invitation and reminder emails (database queue)
+- Activity log with actor, subject, action, metadata JSON
+- Task audit trail storing `before` / `after` diffs for changed tracked fields
+- Project and task soft delete + restore + force delete trash views
+- Task filtering by status/assignee/overdue/priority and search by title/description
+- Kanban drag-and-drop board with optimistic UI updates
+- Task comments with `@email` mentions + file attachments
+- In-app notifications inbox with unread state
+- Daily due-date reminder pipeline (queued email + in-app notification)
+- Saved task filter views and bulk task actions
+- Workspace settings (branding/role/timezone/retention)
+- Workspace analytics dashboard (completion, overdue, workload)
+- API + personal access tokens (Sanctum)
+- Demo seed data and comprehensive feature tests
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2+
+- Composer
+- Node.js + npm (for frontend assets)
+- SQLite (default) or MySQL/PostgreSQL via `.env`
 
-## Learning Laravel
+## Setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+npm install
+npm run build
+php artisan storage:link
+php artisan serve
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Queue + Scheduler
 
-## Laravel Sponsors
+Default queue driver is `database`.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+php artisan queue:work
+```
 
-### Premium Partners
+Invitation reminders are scheduled daily through:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- Command: `php artisan workspace:send-invitation-reminders`
+- Scheduler: configured in `routes/console.php`
 
-## Contributing
+Task due reminders:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Command: `php artisan workspace:send-task-reminders`
+- Scheduler: daily at `08:00` in `routes/console.php`
 
-## Code of Conduct
+Run scheduler locally:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan schedule:work
+```
 
-## Security Vulnerabilities
+## Demo Accounts
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- `admin@example.com` / `password`
+- `member@example.com` / `password`
 
-## License
+## Running Tests
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan test
+```
+
+## Quality Checks
+
+```bash
+./vendor/bin/pint --test
+./vendor/bin/phpstan analyse
+```
+
+## API Usage
+
+Create a token from `API Tokens` page in-app (`/api-tokens`) or via `POST /api/tokens`.
+
+Use:
+
+- Header: `Authorization: Bearer {token}`
+- Header: `X-Workspace-Id: {workspace_id}` (required when user belongs to multiple workspaces)
+
+Endpoints:
+
+- `GET /api/projects`
+- `GET /api/projects/{project}/tasks`
+- `GET /api/tokens`
+- `POST /api/tokens`
+- `DELETE /api/tokens/{tokenId}`
+
+## CI
+
+GitHub Actions pipeline (`.github/workflows/ci.yml`) runs:
+
+- PHP syntax checks (`php -l`)
+- Laravel Pint
+- PHPStan/Larastan
+- PHPUnit feature tests
+
+## Key Design Choices
+
+- Cross-workspace resource access returns `404` to prevent data leakage.
+- Workspace data is always resolved against the current session workspace.
+- Invitation tokens are never stored in plain text; only SHA-256 hashes are stored.
+- Admin safeguards prevent removing/demoting the last admin or workspace owner.
