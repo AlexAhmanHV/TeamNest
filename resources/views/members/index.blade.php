@@ -2,7 +2,16 @@
     <x-slot name="header">
         <h1 class="tn-page-title">Members & Invitations</h1>
     </x-slot>
-    <div class="py-8"><div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-8" x-data x-init="
+        if (window.location.hash.startsWith('#member-')) {
+            const row = document.querySelector(window.location.hash);
+            if (row) {
+                row.scrollIntoView({ block: 'center' });
+                row.classList.add('bg-brand-500/10');
+                setTimeout(() => row.classList.remove('bg-brand-500/10'), 2000);
+            }
+        }
+    "><div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
         <div class="tn-card">
             <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Invite Member</h3>
             <form method="POST" action="{{ route('invites.store') }}" class="grid md:grid-cols-4 gap-3">@csrf
@@ -19,7 +28,7 @@
             <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Members</h3>
             <table class="tn-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody>
                 @foreach($workspace->users as $member)
-                    <tr>
+                    <tr id="member-{{ $member->id }}">
                         <td>{{ $member->name }}</td><td>{{ $member->email }}</td><td><span class="tn-badge-neutral">{{ $member->pivot->role }}</span></td>
                         <td class="flex gap-2 items-center">
                             <form method="POST" action="{{ route('members.role.update', $member) }}">@csrf @method('PATCH')
