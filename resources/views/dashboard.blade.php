@@ -12,9 +12,15 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             @if(! $workspace)
                 <div class="tn-card max-w-xl">
-                    <h2 class="text-xl font-bold text-white">Create your first workspace</h2>
-                    <p class="text-sm text-slate-400 mt-2">Workspaces keep your projects, teammates, and activity isolated from other teams.</p>
-                    <a href="{{ route('workspaces.index') }}" class="tn-btn-primary inline-block mt-4">Create a workspace</a>
+                    @if($hasWorkspaces)
+                        <h2 class="text-xl font-bold text-white">Select a workspace</h2>
+                        <p class="text-sm text-slate-400 mt-2">Choose which workspace you want to work in.</p>
+                        <a href="{{ route('workspaces.index') }}" class="tn-btn-primary inline-block mt-4">Choose a workspace</a>
+                    @else
+                        <h2 class="text-xl font-bold text-white">Create your first workspace</h2>
+                        <p class="text-sm text-slate-400 mt-2">Workspaces keep your projects, teammates, and activity isolated from other teams.</p>
+                        <a href="{{ route('workspaces.index') }}" class="tn-btn-primary inline-block mt-4">Create a workspace</a>
+                    @endif
                 </div>
             @else
                 <div class="grid md:grid-cols-4 gap-4">

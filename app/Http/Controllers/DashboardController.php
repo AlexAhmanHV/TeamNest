@@ -15,7 +15,10 @@ class DashboardController extends Controller
         $workspace = $currentWorkspace->forUser();
 
         if (! $workspace) {
-            return view('dashboard', ['workspace' => null]);
+            return view('dashboard', [
+                'workspace' => null,
+                'hasWorkspaces' => auth()->user()->workspaces()->exists(),
+            ]);
         }
 
         $taskBase = DB::table('tasks')
