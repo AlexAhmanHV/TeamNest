@@ -9,6 +9,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TaskAttachmentController;
 use App\Http\Controllers\TaskBulkActionController;
 use App\Http\Controllers\TaskCommentController;
@@ -36,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/members', [MemberController::class, 'index'])->name('members.index');
         Route::patch('/members/{user}/role', [MemberController::class, 'updateRole'])->name('members.role.update');
         Route::delete('/members/{user}', [MemberController::class, 'destroy'])->name('members.destroy');
+        Route::get('/search', [SearchController::class, 'search'])->name('search');
 
         Route::post('/invites', [InvitationController::class, 'store'])->name('invites.store');
         Route::post('/invites/{invitation}/resend', [InvitationController::class, 'resend'])->name('invites.resend');
