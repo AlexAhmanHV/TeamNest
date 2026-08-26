@@ -147,9 +147,13 @@
                 movingTaskId: null,
                 viewers: [],
                 init() {
+                    if (!window.Echo) {
+                        return;
+                    }
+
                     window.Echo.join(`project.${projectId}`)
-                        .here((users) => { this.viewers = users; })
-                        .joining((user) => { this.viewers.push(user); })
+                        .here((users) => { this.viewers = users.filter((u) => u.id !== currentUserId); })
+                        .joining((user) => { if (user.id !== currentUserId) { this.viewers.push(user); } })
                         .leaving((user) => { this.viewers = this.viewers.filter((u) => u.id !== user.id); })
                         .listen('TaskMoved', (event) => {
                             if (event.movedBy === currentUserId) {
@@ -228,12 +232,14 @@
                     formData.append('status', status);
 
                     try {
+                        const socketId = window.Echo?.socketId();
+
                         const response = await fetch(route, {
                             method: 'POST',
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest',
                                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                                'X-Socket-ID': window.Echo.socketId(),
+                                ...(socketId ? { 'X-Socket-ID': socketId } : {}),
                             },
                             body: formData.toString(),
                         });

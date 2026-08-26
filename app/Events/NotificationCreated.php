@@ -16,6 +16,7 @@ class NotificationCreated implements ShouldBroadcast
         public int $userId,
         public int $notificationId,
         public string $type,
+        public int $workspaceId,
     ) {}
 
     public function broadcastOn(): array
@@ -28,6 +29,7 @@ class NotificationCreated implements ShouldBroadcast
         return [
             'notificationId' => $this->notificationId,
             'type' => $this->type,
+            'workspaceId' => $this->workspaceId,
         ];
     }
 }

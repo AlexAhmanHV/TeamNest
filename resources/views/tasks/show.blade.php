@@ -21,6 +21,10 @@
                     liveComments: [],
                     existingCommentIds: @js($task->comments->pluck('id')),
                     init() {
+                        if (!window.Echo) {
+                            return;
+                        }
+
                         window.Echo.private('task.{{ $task->id }}')
                             .listen('TaskCommentPosted', (event) => {
                                 if (this.existingCommentIds.includes(event.commentId)) {
@@ -47,7 +51,7 @@
                         @endforelse
                         <template x-for="comment in liveComments" :key="comment.commentId">
                             <div class="rounded-lg border border-brand-500/40 p-3">
-                                <div class="text-xs text-slate-500" x-text="comment.authorName"></div>
+                                <div class="text-xs text-slate-500" x-text="comment.authorName + ' · just now'"></div>
                                 <p class="text-sm mt-1 text-slate-200" x-text="comment.body"></p>
                             </div>
                         </template>

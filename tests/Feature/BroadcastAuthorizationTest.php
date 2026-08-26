@@ -13,31 +13,37 @@ class BroadcastAuthorizationTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
+    // phpunit.xml forces BROADCAST_CONNECTION=null for the suite so that other
+    // tests never trigger real broadcasts. The null driver's auth() is a no-op
+    // that always returns 200 regardless of channel authorization, so these
+    // tests (which specifically verify channel authorization logic) switch to
+    // the pusher driver, whose auth flow is pure local HMAC signing against
+    // fixed test credentials - no network call is made and no real Pusher
+    // credentials are required.
+    //
+    // The config() override is applied via an app "booting" callback (fired
+    // after config files are loaded but before service providers boot) rather
+    // than a plain setUp() call, because routes/channels.php registers its
+    // Broadcast::channel() callbacks against whichever broadcaster is the
+    // default connection at boot time. Setting config() after parent::setUp()
+    // (i.e. after boot already completed) would only affect a broadcaster
+    // instance that never received those channel registrations.
+    public function createApplication()
     {
-        // phpunit.xml forces BROADCAST_CONNECTION=null for the suite so that other
-        // tests never trigger real broadcasts. The null driver's auth() is a no-op
-        // that always returns 200 regardless of channel authorization, so these
-        // tests (which specifically verify channel authorization logic) switch to
-        // the pusher driver before the application boots, whose auth flow is pure
-        // local HMAC signing against the real credentials already in .env - no
-        // network call is made. This must happen before parent::setUp() boots the
-        // app, since routes/channels.php registers its callbacks against whichever
-        // broadcaster is active at boot time.
-        putenv('BROADCAST_CONNECTION=pusher');
-        $_ENV['BROADCAST_CONNECTION'] = 'pusher';
-        $_SERVER['BROADCAST_CONNECTION'] = 'pusher';
+        $app = require __DIR__.'/../../bootstrap/app.php';
 
-        parent::setUp();
-    }
+        $app->booting(function () {
+            config([
+                'broadcasting.default' => 'pusher',
+                'broadcasting.connections.pusher.key' => 'test-key',
+                'broadcasting.connections.pusher.secret' => 'test-secret',
+                'broadcasting.connections.pusher.app_id' => 'test-app-id',
+            ]);
+        });
 
-    protected function tearDown(): void
-    {
-        putenv('BROADCAST_CONNECTION=null');
-        $_ENV['BROADCAST_CONNECTION'] = 'null';
-        $_SERVER['BROADCAST_CONNECTION'] = 'null';
+        $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
-        parent::tearDown();
+        return $app;
     }
 
     public function test_user_in_projects_workspace_can_authorize_the_project_presence_channel(): void

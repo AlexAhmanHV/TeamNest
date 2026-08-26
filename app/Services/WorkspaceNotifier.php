@@ -17,7 +17,7 @@ class WorkspaceNotifier
             'data' => $data,
         ]);
 
-        broadcast(new NotificationCreated($userId, $notification->id, $type))->toOthers();
+        broadcast(new NotificationCreated($userId, $notification->id, $type, $workspace->id))->toOthers();
 
         return $notification;
     }

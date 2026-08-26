@@ -25,10 +25,10 @@
                         :href="route('notifications.index')"
                         :active="request()->routeIs('notifications.*')"
                         x-data="{ count: {{ $unreadCount }} }"
-                        x-init="window.Echo.private('user.{{ auth()->id() }}').listen('NotificationCreated', () => { count++; })"
+                        x-init="window.Echo?.private('user.{{ auth()->id() }}')?.listen('NotificationCreated', (e) => { if (e.workspaceId === {{ (int) session('current_workspace_id') }}) count++; })"
                     >
                         Notifications
-                        <span class="ml-1 tn-badge-brand" x-show="count > 0" x-text="count"></span>
+                        <span class="ml-1 tn-badge-brand" style="{{ $unreadCount > 0 ? '' : 'display:none' }}" x-show="count > 0" x-text="count">{{ $unreadCount ?: '' }}</span>
                     </x-nav-link>
                 </div>
             </div>
