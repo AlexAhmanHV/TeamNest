@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="space-y-1 mb-6">
         <h1 class="text-2xl font-extrabold text-white">Create your account</h1>
-        <p class="text-sm text-slate-300">Join Workspace Projects and start collaborating.</p>
+        <p class="text-sm text-slate-300">Join TeamNest and start collaborating.</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}" class="space-y-4">

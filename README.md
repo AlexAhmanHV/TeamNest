@@ -1,6 +1,25 @@
-# Workspace Projects
+# TeamNest
 
-Workspace Projects is a portfolio-grade Laravel Mini-SaaS for managing projects and tasks inside isolated workspaces.
+TeamNest is a portfolio-grade Laravel mini-SaaS for managing projects and tasks inside isolated team workspaces — multi-tenant RBAC, a drag-and-drop Kanban board, and a full before/after audit trail on every tracked change.
+
+Not deployed yet — run it locally with [Setup](#setup) below, then log in with the [demo accounts](#demo-accounts).
+
+## Screenshots
+
+| Landing page | Kanban board |
+|---|---|
+| ![Landing page](docs/screenshots/landing.png) | ![Kanban board](docs/screenshots/kanban.png) |
+
+| Dashboard | Members & invitations |
+|---|---|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Members and invitations](docs/screenshots/members.png) |
+
+<details>
+<summary>Sign-up screen</summary>
+
+![Register](docs/screenshots/register.png)
+
+</details>
 
 ## Features
 

@@ -44,7 +44,7 @@
                     </p>
 
                     <div class="mt-8 flex flex-wrap items-center gap-4">
-                        <a href="{{ route('login') }}" class="tn-btn-primary text-base px-6 py-3">Se demo &rarr;</a>
+                        <a href="{{ route('login') }}" class="tn-btn-primary text-base px-6 py-3">Try the demo &rarr;</a>
                         <a href="{{ route('register') }}" class="text-sm font-semibold uppercase tracking-wider text-slate-400 hover:text-white">Create an account</a>
                     </div>
 
