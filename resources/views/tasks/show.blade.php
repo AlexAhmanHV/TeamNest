@@ -19,10 +19,15 @@
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="tn-card" x-data="{
                     liveComments: [],
+                    existingCommentIds: @js($task->comments->pluck('id')),
                     init() {
                         window.Echo.private('task.{{ $task->id }}')
                             .listen('TaskCommentPosted', (event) => {
+                                if (this.existingCommentIds.includes(event.commentId)) {
+                                    return;
+                                }
                                 this.liveComments.push(event);
+                                this.existingCommentIds.push(event.commentId);
                             });
                     },
                 }">
