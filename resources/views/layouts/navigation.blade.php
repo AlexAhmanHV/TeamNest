@@ -30,6 +30,60 @@
                 </div>
             </div>
 
+            @if(session('current_workspace_id'))
+                <div x-data="searchPalette()" x-on:keydown.window="if ((event.metaKey || event.ctrlKey) && event.key === 'k') { event.preventDefault(); openPalette(); }" class="flex items-center">
+                    <button type="button" @click="openPalette()" class="tn-nav-link flex items-center gap-1" aria-label="Search">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+                        </svg>
+                    </button>
+
+                    <x-modal name="search-palette" maxWidth="lg">
+                        <div class="p-4">
+                            <input
+                                x-ref="searchInput"
+                                type="text"
+                                x-model="query"
+                                x-on:input="onInput()"
+                                x-on:keydown.down.prevent="moveHighlight(1)"
+                                x-on:keydown.up.prevent="moveHighlight(-1)"
+                                x-on:keydown.enter.prevent="goToHighlighted()"
+                                class="tn-input w-full"
+                                placeholder="Search projects, tasks, members..."
+                                autocomplete="off"
+                            >
+
+                            <template x-if="results.projects.length">
+                                <div class="mt-4">
+                                    <h4 class="text-xs uppercase tracking-wider text-slate-500 mb-2">Projects</h4>
+                                    <template x-for="project in results.projects" :key="'project-' + project.id">
+                                        <a :href="`/projects/${project.id}`" class="tn-row block" :class="{ 'bg-brand-500/10': isHighlighted(`/projects/${project.id}`) }" x-text="project.name"></a>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <template x-if="results.tasks.length">
+                                <div class="mt-4">
+                                    <h4 class="text-xs uppercase tracking-wider text-slate-500 mb-2">Tasks</h4>
+                                    <template x-for="task in results.tasks" :key="'task-' + task.id">
+                                        <a :href="`/tasks/${task.id}`" class="tn-row block" :class="{ 'bg-brand-500/10': isHighlighted(`/tasks/${task.id}`) }" x-text="task.title"></a>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <template x-if="results.members.length">
+                                <div class="mt-4">
+                                    <h4 class="text-xs uppercase tracking-wider text-slate-500 mb-2">Members</h4>
+                                    <template x-for="member in results.members" :key="'member-' + member.id">
+                                        <a :href="`/members#member-${member.id}`" class="tn-row block" :class="{ 'bg-brand-500/10': isHighlighted(`/members#member-${member.id}`) }" x-text="member.name"></a>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </x-modal>
+                </div>
+            @endif
+
             <div class="hidden sm:flex sm:items-center sm:ms-6 gap-3">
                 <form method="POST" action="{{ route('workspaces.switch') }}">
                     @csrf
