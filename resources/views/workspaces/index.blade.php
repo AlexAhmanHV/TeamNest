@@ -3,6 +3,12 @@
         <h1 class="tn-page-title">Workspaces</h1>
     </x-slot>
     <div class="py-8"><div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        @if($workspaces->isEmpty())
+            <div class="tn-card max-w-xl">
+                <h2 class="text-xl font-bold text-white">No workspaces yet</h2>
+                <p class="text-sm text-slate-400 mt-2">Workspaces keep your projects, teammates, and activity isolated from other teams.</p>
+            </div>
+        @endif
         <div class="tn-card">
             <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Your Workspaces</h3>
             <ul class="space-y-2">
