@@ -17,7 +17,15 @@
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
-                <div class="tn-card">
+                <div class="tn-card" x-data="{
+                    liveComments: [],
+                    init() {
+                        window.Echo.private('task.{{ $task->id }}')
+                            .listen('TaskCommentPosted', (event) => {
+                                this.liveComments.push(event);
+                            });
+                    },
+                }">
                     <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Comments</h3>
                     <form method="POST" action="{{ route('tasks.comments.store', $task) }}" class="space-y-2">@csrf
                         <textarea name="body" class="tn-input w-full" rows="3" placeholder="Write a comment. Use @email for mentions." required></textarea>
@@ -32,6 +40,12 @@
                         @empty
                             <p class="text-sm text-slate-500">No comments yet.</p>
                         @endforelse
+                        <template x-for="comment in liveComments" :key="comment.commentId">
+                            <div class="rounded-lg border border-brand-500/40 p-3">
+                                <div class="text-xs text-slate-500" x-text="comment.authorName"></div>
+                                <p class="text-sm mt-1 text-slate-200" x-text="comment.body"></p>
+                            </div>
+                        </template>
                     </div>
                 </div>
 
