@@ -10,6 +10,7 @@ use App\Actions\Task\ForceDeleteTask;
 use App\Actions\Task\RestoreTask;
 use App\Actions\Task\UpdateTask;
 use App\Enums\TaskStatus;
+use App\Events\TaskMoved;
 use App\Http\Requests\AssignTaskRequest;
 use App\Http\Requests\MoveTaskRequest;
 use App\Http\Requests\StoreTaskRequest;
@@ -185,9 +186,13 @@ class TaskController extends Controller
         abort_unless($task->project->workspace_id === $currentWorkspace->requireForUser()->id, 404);
         $this->authorize('update', $task);
 
+        $status = $request->string('status')->toString();
+
         $action->execute($task, $request->user(), [
-            'status' => $request->string('status')->toString(),
+            'status' => $status,
         ]);
+
+        broadcast(new TaskMoved($task->project_id, $task->id, $status, $request->user()->id))->toOthers();
 
         return back()->with('status', 'Task moved.');
     }

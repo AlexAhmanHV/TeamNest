@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TaskCommentPosted;
 use App\Http\Requests\StoreTaskCommentRequest;
 use App\Models\Task;
 use App\Models\User;
@@ -28,6 +29,14 @@ class TaskCommentController extends Controller
             'user_id' => $request->user()->id,
             'body' => $request->string('body')->toString(),
         ]);
+
+        broadcast(new TaskCommentPosted(
+            $task->id,
+            $comment->id,
+            $comment->body,
+            $request->user()->name,
+            $comment->created_at->toISOString(),
+        ))->toOthers();
 
         preg_match_all('/@([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/', $comment->body, $matches);
         $emails = array_unique(array_map('strtolower', $matches[1] ?? []));
