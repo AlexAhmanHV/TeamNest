@@ -92,16 +92,16 @@
                 </form>
 
                 <div class="mb-3 flex flex-wrap gap-2 items-center">
-                    <select id="bulk-action" class="tn-input text-sm" required>
+                    <select id="bulk-action" class="tn-input w-auto text-sm" required>
                         <option value="">Bulk action</option>
                         <option value="status">Set status</option>
                         <option value="priority">Set priority</option>
                         <option value="assign">Set assignee</option>
                         <option value="delete">Delete</option>
                     </select>
-                    <select id="bulk-status" class="tn-input text-sm"><option value="">status...</option><option>todo</option><option>doing</option><option>done</option></select>
-                    <select id="bulk-priority" class="tn-input text-sm"><option value="">priority...</option><option>low</option><option>med</option><option>high</option></select>
-                    <select id="bulk-assignee" class="tn-input text-sm"><option value="">assignee...</option>@foreach($members as $member)<option value="{{ $member->id }}">{{ $member->name }}</option>@endforeach</select>
+                    <select id="bulk-status" class="tn-input w-auto text-sm"><option value="">status...</option><option>todo</option><option>doing</option><option>done</option></select>
+                    <select id="bulk-priority" class="tn-input w-auto text-sm"><option value="">priority...</option><option>low</option><option>med</option><option>high</option></select>
+                    <select id="bulk-assignee" class="tn-input w-auto text-sm"><option value="">assignee...</option>@foreach($members as $member)<option value="{{ $member->id }}">{{ $member->name }}</option>@endforeach</select>
                     <button type="button" onclick="submitBulkAction()" class="tn-btn-secondary text-sm">Apply to selected</button>
                 </div>
 
