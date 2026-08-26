@@ -24,9 +24,17 @@
             <div class="tn-card">
                 <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Kanban Board</h3>
                 <div
-                    x-data="kanbanBoard('{{ csrf_token() }}', '{{ url('/tasks/__TASK__/move') }}')"
+                    x-data="kanbanBoard('{{ csrf_token() }}', '{{ url('/tasks/__TASK__/move') }}', {{ $project->id }}, {{ auth()->id() }})"
                     class="grid md:grid-cols-3 gap-4"
                 >
+                    <template x-if="viewers.length">
+                        <div class="md:col-span-3 flex items-center gap-2 text-xs text-slate-400 mb-1">
+                            <span>Viewing now:</span>
+                            <template x-for="viewer in viewers" :key="viewer.id">
+                                <span class="tn-badge-neutral" x-text="viewer.name"></span>
+                            </template>
+                        </div>
+                    </template>
                     @foreach (['todo' => 'To Do', 'doing' => 'Doing', 'done' => 'Done'] as $columnKey => $columnLabel)
                         <section
                             class="rounded-xl border p-3 min-h-[340px]"
@@ -132,11 +140,39 @@
     </div>
 
     <script>
-        function kanbanBoard(csrfToken, moveRouteTemplate) {
+        function kanbanBoard(csrfToken, moveRouteTemplate, projectId, currentUserId) {
             return {
                 draggingTask: null,
                 dragOverStatus: null,
                 movingTaskId: null,
+                viewers: [],
+                init() {
+                    window.Echo.join(`project.${projectId}`)
+                        .here((users) => { this.viewers = users; })
+                        .joining((user) => { this.viewers.push(user); })
+                        .leaving((user) => { this.viewers = this.viewers.filter((u) => u.id !== user.id); })
+                        .listen('TaskMoved', (event) => {
+                            if (event.movedBy === currentUserId) {
+                                return;
+                            }
+
+                            const taskNode = document.getElementById(`kanban-task-${event.taskId}`);
+                            if (!taskNode) {
+                                return;
+                            }
+
+                            const fromStatus = ['todo', 'doing', 'done'].find((key) => this.$refs[`column-${key}`] === taskNode.parentElement);
+                            if (!fromStatus || fromStatus === event.toStatus) {
+                                return;
+                            }
+
+                            const moved = this.moveCardTo(event.taskId, event.toStatus);
+                            if (moved) {
+                                this.updateCount(fromStatus, -1);
+                                this.updateCount(event.toStatus, 1);
+                            }
+                        });
+                },
                 startDrag(task) {
                     this.draggingTask = task;
                 },
@@ -149,6 +185,20 @@
                     const current = Number.parseInt(countNode.textContent || '0', 10) || 0;
                     countNode.textContent = String(Math.max(0, current + delta));
                 },
+                moveCardTo(taskId, toStatus) {
+                    const taskNode = document.getElementById(`kanban-task-${taskId}`);
+                    const targetColumn = this.$refs[`column-${toStatus}`];
+
+                    if (!taskNode || !targetColumn) {
+                        return null;
+                    }
+
+                    const previousParent = taskNode.parentElement;
+                    const previousNextSibling = taskNode.nextElementSibling;
+                    targetColumn.prepend(taskNode);
+
+                    return { previousParent, previousNextSibling, taskNode };
+                },
                 async dropTo(status) {
                     if (!this.draggingTask || this.draggingTask.status === status || this.movingTaskId !== null) {
                         this.dragOverStatus = null;
@@ -157,18 +207,17 @@
 
                     const fromStatus = this.draggingTask.status;
                     const taskId = this.draggingTask.id;
-                    const taskNode = document.getElementById(`kanban-task-${taskId}`);
-                    const targetColumn = this.$refs[`column-${status}`];
 
-                    if (!taskNode || !targetColumn) {
+                    this.movingTaskId = taskId;
+                    const moveResult = this.moveCardTo(taskId, status);
+
+                    if (!moveResult) {
+                        this.movingTaskId = null;
                         this.dragOverStatus = null;
                         return;
                     }
 
-                    this.movingTaskId = taskId;
-                    const previousParent = taskNode.parentElement;
-                    const previousNextSibling = taskNode.nextElementSibling;
-                    targetColumn.prepend(taskNode);
+                    const { previousParent, previousNextSibling, taskNode } = moveResult;
                     this.updateCount(fromStatus, -1);
                     this.updateCount(status, 1);
                     this.draggingTask.status = status;
@@ -184,6 +233,7 @@
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest',
                                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                                'X-Socket-ID': window.Echo.socketId(),
                             },
                             body: formData.toString(),
                         });
