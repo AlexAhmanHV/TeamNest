@@ -1,6 +1,6 @@
 ﻿<x-app-layout>
     <x-slot name="header">
-        <p class="tn-page-title">Workspace Settings</p>
+        <h1 class="tn-page-title">Workspace Settings</h1>
     </x-slot>
 
     <div class="py-8">

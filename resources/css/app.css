@@ -59,6 +59,10 @@
         @apply w-full divide-y divide-slate-800 text-left text-sm text-slate-300;
     }
 
+    .tn-table tbody tr + tr {
+        @apply border-t border-slate-800;
+    }
+
     .tn-table th {
         @apply px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500;
     }

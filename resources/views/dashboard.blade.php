@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="tn-page-header mb-0">
             <div>
-                <p class="tn-page-title">Dashboard</p>
+                <h1 class="tn-page-title">Dashboard</h1>
                 <p class="tn-page-description">{{ $workspace?->name ?? 'Select or create a workspace to continue.' }}</p>
             </div>
         </div>

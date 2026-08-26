@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <p class="tn-page-title">{{ __('Profile') }}</p>
+        <h1 class="tn-page-title">{{ __('Profile') }}</h1>
     </x-slot>
 
     <div class="py-12">

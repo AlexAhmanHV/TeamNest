@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header"><p class="tn-page-title">Task Trash: {{ $project->name }}</p></x-slot>
+    <x-slot name="header"><h1 class="tn-page-title">Task Trash: {{ $project->name }}</h1></x-slot>
     <div class="py-8"><div class="max-w-6xl mx-auto sm:px-6 lg:px-8 tn-card">
         <a href="{{ route('tasks.index', $project) }}" class="text-sm tn-link">Back to Tasks</a>
         <table class="tn-table mt-4"><thead><tr><th>Title</th><th>Deleted At</th><th>Actions</th></tr></thead><tbody>

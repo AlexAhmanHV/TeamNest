@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <p class="tn-page-title">Project Trash</p>
+        <h1 class="tn-page-title">Project Trash</h1>
     </x-slot>
     <div class="py-8"><div class="max-w-6xl mx-auto sm:px-6 lg:px-8 tn-card">
         <a href="{{ route('projects.index') }}" class="text-sm tn-link">Back to Projects</a>
