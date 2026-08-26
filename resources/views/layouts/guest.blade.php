@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Workspace Projects') }}</title>
+        <title>{{ config('app.name', 'TeamNest') }}</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -18,14 +18,14 @@
                 <div class="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/70 shadow-2xl shadow-black/40 backdrop-blur">
                     <div class="grid min-h-[82vh] lg:grid-cols-2">
                         <div class="relative hidden overflow-hidden border-r border-slate-800 p-10 lg:block">
-                            <div class="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-cyan-500/20 blur-3xl"></div>
-                            <div class="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"></div>
+                            <div class="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-brand-500/20 blur-3xl"></div>
+                            <div class="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-brand-700/20 blur-3xl"></div>
 
                             <a href="{{ url('/') }}" class="relative inline-flex items-center gap-3">
                                 <x-application-logo class="h-11 w-11" />
                                 <div>
-                                    <p class="text-xs uppercase tracking-[0.25em] text-cyan-300">Mini SaaS</p>
-                                    <p class="text-lg font-bold text-white">Workspace Projects</p>
+                                    <p class="text-xs uppercase tracking-[0.25em] text-brand-300">TeamNest</p>
+                                    <p class="text-lg font-bold text-white">Projects, tracked.</p>
                                 </div>
                             </a>
 
@@ -46,7 +46,7 @@
                                 <div class="flex items-center gap-3 lg:hidden">
                                     <x-application-logo class="h-10 w-10" />
                                     <div>
-                                        <p class="text-xs uppercase tracking-[0.22em] text-cyan-300">Workspace Projects</p>
+                                        <p class="text-xs uppercase tracking-[0.22em] text-brand-300">TeamNest</p>
                                         <p class="text-sm text-slate-300">Account Access</p>
                                     </div>
                                 </div>
