@@ -13,18 +13,25 @@
             </form>
         </div>
 
-        <div class="tn-card">
-            <table class="tn-table"><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody>
-                @foreach($projects as $project)
-                    <tr><td>{{ $project->name }}</td>
-                        <td class="flex gap-3">
-                            <a href="{{ route('projects.show', $project) }}" class="tn-link">Open</a>
-                            <form method="POST" action="{{ route('projects.destroy', $project) }}">@csrf @method('DELETE')<button class="text-rose-400 hover:text-rose-300">Delete</button></form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody></table>
-            <div class="mt-4">{{ $projects->links() }}</div>
-        </div>
+        @if($projects->isEmpty())
+            <div class="tn-card">
+                <h2 class="text-lg font-bold text-white">No projects yet</h2>
+                <p class="text-sm text-slate-400 mt-2">Create a project to start organizing tasks.</p>
+            </div>
+        @else
+            <div class="tn-card">
+                <table class="tn-table"><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody>
+                    @foreach($projects as $project)
+                        <tr><td>{{ $project->name }}</td>
+                            <td class="flex gap-3">
+                                <a href="{{ route('projects.show', $project) }}" class="tn-link">Open</a>
+                                <form method="POST" action="{{ route('projects.destroy', $project) }}">@csrf @method('DELETE')<button class="text-rose-400 hover:text-rose-300">Delete</button></form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody></table>
+                <div class="mt-4">{{ $projects->links() }}</div>
+            </div>
+        @endif
     </div></div>
 </x-app-layout>
