@@ -5,7 +5,7 @@
     </div>
 
     @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 rounded-md border border-emerald-700 bg-emerald-900/40 px-3 py-2 text-sm text-emerald-300">
+        <div class="mb-4 rounded-lg border border-emerald-800 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-300">
             A new verification link has been sent to your email.
         </div>
     @endif
@@ -13,7 +13,7 @@
     <div class="mt-4 flex items-center justify-between gap-3">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
-            <x-primary-button class="bg-cyan-600 hover:bg-cyan-500 focus:bg-cyan-500">Resend verification email</x-primary-button>
+            <x-primary-button>Resend verification email</x-primary-button>
         </form>
 
         <form method="POST" action="{{ route('logout') }}">
