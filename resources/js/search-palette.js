@@ -56,7 +56,16 @@ export default function searchPalette() {
 
         goToHighlighted() {
             const item = this.flatResults()[this.highlightedIndex];
-            if (item) window.location.href = item.url;
+            if (!item) return;
+
+            const [path, hash] = item.url.split('#');
+            if (path === window.location.pathname && hash) {
+                window.location.hash = '';
+                window.location.hash = hash;
+                window.location.reload();
+            } else {
+                window.location.href = item.url;
+            }
         },
 
         isHighlighted(url) {

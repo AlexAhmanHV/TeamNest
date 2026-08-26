@@ -18,7 +18,7 @@ class MemberController extends Controller
             'invitations' => fn ($query) => $query->whereNull('accepted_at')->latest(),
         ]);
 
-        $this->authorize('manageMembers', $workspace);
+        $this->authorize('view', $workspace);
 
         return view('members.index', [
             'workspace' => $workspace,

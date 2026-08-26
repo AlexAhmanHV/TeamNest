@@ -4,7 +4,7 @@
     </x-slot>
     <div class="py-8" x-data x-init="
         if (window.location.hash.startsWith('#member-')) {
-            const row = document.querySelector(window.location.hash);
+            const row = document.getElementById(window.location.hash.slice(1));
             if (row) {
                 row.scrollIntoView({ block: 'center' });
                 row.classList.add('bg-brand-500/10');
@@ -12,6 +12,7 @@
             }
         }
     "><div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        @can('manageMembers', $workspace)
         <div class="tn-card">
             <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Invite Member</h3>
             <form method="POST" action="{{ route('invites.store') }}" class="grid md:grid-cols-4 gap-3">@csrf
@@ -23,6 +24,7 @@
                 <x-primary-button class="justify-center">Send Invite</x-primary-button>
             </form>
         </div>
+        @endcan
 
         <div class="tn-card">
             <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Members</h3>
@@ -31,23 +33,28 @@
                     <tr id="member-{{ $member->id }}">
                         <td>{{ $member->name }}</td><td>{{ $member->email }}</td><td><span class="tn-badge-neutral">{{ $member->pivot->role }}</span></td>
                         <td class="flex gap-2 items-center">
-                            <form method="POST" action="{{ route('members.role.update', $member) }}">@csrf @method('PATCH')
-                                <select name="role" class="tn-input text-xs py-1" onchange="this.form.submit()">
-                                    <option value="member" @selected($member->pivot->role==='member')>member</option>
-                                    <option value="admin" @selected($member->pivot->role==='admin')>admin</option>
-                                </select>
-                            </form>
-                            @if($workspace->owner_user_id !== $member->id)
-                            <form method="POST" action="{{ route('members.destroy', $member) }}">@csrf @method('DELETE')
-                                <button class="text-xs text-rose-400 hover:text-rose-300">Remove</button>
-                            </form>
-                            @endif
+                            @can('manageMembers', $workspace)
+                                <form method="POST" action="{{ route('members.role.update', $member) }}">@csrf @method('PATCH')
+                                    <select name="role" class="tn-input text-xs py-1" onchange="this.form.submit()">
+                                        <option value="member" @selected($member->pivot->role==='member')>member</option>
+                                        <option value="admin" @selected($member->pivot->role==='admin')>admin</option>
+                                    </select>
+                                </form>
+                                @if($workspace->owner_user_id !== $member->id)
+                                <form method="POST" action="{{ route('members.destroy', $member) }}">@csrf @method('DELETE')
+                                    <button class="text-xs text-rose-400 hover:text-rose-300">Remove</button>
+                                </form>
+                                @endif
+                            @else
+                                <span class="text-xs text-slate-500">—</span>
+                            @endcan
                         </td>
                     </tr>
                 @endforeach
             </tbody></table>
         </div>
 
+        @can('manageMembers', $workspace)
         <div class="tn-card">
             <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Pending Invitations</h3>
             <table class="tn-table"><thead><tr><th>Email</th><th>Role</th><th>Expires</th><th>Actions</th></tr></thead><tbody>
@@ -65,5 +72,6 @@
                 @endforeach
             </tbody></table>
         </div>
+        @endcan
     </div></div>
 </x-app-layout>

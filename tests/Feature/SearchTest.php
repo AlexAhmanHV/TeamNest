@@ -111,4 +111,25 @@ class SearchTest extends TestCase
         $response->assertOk();
         $response->assertExactJson(['projects' => [], 'tasks' => [], 'members' => []]);
     }
+
+    public function test_search_member_results_do_not_leak_pivot_data(): void
+    {
+        $user = User::factory()->create();
+        $workspace = Workspace::factory()->create(['owner_user_id' => $user->id]);
+        $workspace->users()->attach($user->id, ['role' => 'admin', 'joined_at' => now()]);
+
+        $member = User::factory()->create(['name' => 'Ada Lovelace']);
+        $workspace->users()->attach($member->id, ['role' => 'member', 'joined_at' => now()]);
+
+        $response = $this->actingAs($user)
+            ->withSession(['current_workspace_id' => $workspace->id])
+            ->getJson(route('search', ['q' => 'ada']));
+
+        $response->assertOk();
+        $response->assertExactJson([
+            'projects' => [],
+            'tasks' => [],
+            'members' => [['id' => $member->id, 'name' => 'Ada Lovelace']],
+        ]);
+    }
 }

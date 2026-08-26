@@ -63,4 +63,28 @@ class AuthorizationTest extends TestCase
 
         $this->assertDatabaseHas('invitations', ['workspace_id' => $workspace->id, 'email' => 'new@example.com']);
     }
+
+    public function test_member_can_view_but_not_manage_members_page(): void
+    {
+        $admin = User::factory()->create();
+        $member = User::factory()->create();
+
+        $workspace = Workspace::factory()->create(['owner_user_id' => $admin->id]);
+        $workspace->users()->attach($admin->id, ['role' => 'admin', 'joined_at' => now()]);
+        $workspace->users()->attach($member->id, ['role' => 'member', 'joined_at' => now()]);
+
+        $session = ['current_workspace_id' => $workspace->id];
+
+        $this->actingAs($member)->withSession($session)
+            ->get(route('members.index'))
+            ->assertOk()
+            ->assertDontSee('Invite Member')
+            ->assertDontSee('Pending Invitations');
+
+        $this->actingAs($admin)->withSession($session)
+            ->get(route('members.index'))
+            ->assertOk()
+            ->assertSee('Invite Member')
+            ->assertSee('Pending Invitations');
+    }
 }
