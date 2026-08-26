@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ApiTokenController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
@@ -15,7 +16,6 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskSavedViewController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceSettingsController;
-use App\Services\CurrentWorkspace;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,11 +26,7 @@ Route::get('/invites/{token}/accept', [InvitationController::class, 'acceptShow'
 Route::post('/invites/{token}/accept', [InvitationController::class, 'accept'])->middleware('auth')->name('invites.accept');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', function (CurrentWorkspace $currentWorkspace) {
-        return view('dashboard', [
-            'workspace' => $currentWorkspace->forUser(),
-        ]);
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/workspaces', [WorkspaceController::class, 'index'])->name('workspaces.index');
     Route::post('/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
