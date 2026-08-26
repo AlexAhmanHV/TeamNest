@@ -15,17 +15,20 @@
                     <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*') || request()->routeIs('invites.*')">Members</x-nav-link>
                     <x-nav-link :href="route('activity.index')" :active="request()->routeIs('activity.*')">Activity</x-nav-link>
                     <x-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.*')">Analytics</x-nav-link>
-                    <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
+                    @php
+                        $unreadCount = auth()->user()->workspaceNotifications()
+                            ->where('workspace_id', session('current_workspace_id'))
+                            ->whereNull('read_at')
+                            ->count();
+                    @endphp
+                    <x-nav-link
+                        :href="route('notifications.index')"
+                        :active="request()->routeIs('notifications.*')"
+                        x-data="{ count: {{ $unreadCount }} }"
+                        x-init="window.Echo.private('user.{{ auth()->id() }}').listen('NotificationCreated', () => { count++; })"
+                    >
                         Notifications
-                        @php
-                            $unreadCount = auth()->user()->workspaceNotifications()
-                                ->where('workspace_id', session('current_workspace_id'))
-                                ->whereNull('read_at')
-                                ->count();
-                        @endphp
-                        @if($unreadCount > 0)
-                            <span class="ml-1 tn-badge-brand">{{ $unreadCount }}</span>
-                        @endif
+                        <span class="ml-1 tn-badge-brand" x-show="count > 0" x-text="count"></span>
                     </x-nav-link>
                 </div>
             </div>
