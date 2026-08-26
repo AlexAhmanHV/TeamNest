@@ -4,13 +4,13 @@ export default function searchPalette() {
         results: { projects: [], tasks: [], members: [] },
         highlightedIndex: 0,
         debounceTimer: null,
+        requestId: 0,
 
         openPalette() {
             this.query = '';
             this.results = { projects: [], tasks: [], members: [] };
             this.highlightedIndex = 0;
             window.dispatchEvent(new CustomEvent('open-modal', { detail: 'search-palette' }));
-            this.$nextTick(() => this.$refs.searchInput && this.$refs.searchInput.focus());
         },
 
         onInput() {
@@ -25,10 +25,18 @@ export default function searchPalette() {
                 return;
             }
 
+            const requestId = ++this.requestId;
+
             const response = await fetch(`/search?q=${encodeURIComponent(this.query)}`, {
                 headers: { Accept: 'application/json' },
             });
-            this.results = await response.json();
+            const data = await response.json();
+
+            if (requestId !== this.requestId) {
+                return;
+            }
+
+            this.results = data;
             this.highlightedIndex = 0;
         },
 

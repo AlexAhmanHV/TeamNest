@@ -38,10 +38,9 @@
                         </svg>
                     </button>
 
-                    <x-modal name="search-palette" maxWidth="lg">
+                    <x-modal name="search-palette" maxWidth="lg" focusable>
                         <div class="p-4">
                             <input
-                                x-ref="searchInput"
                                 type="text"
                                 x-model="query"
                                 x-on:input="onInput()"
