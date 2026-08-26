@@ -1,9 +1,11 @@
 ﻿<x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800">Workspace Settings</h2></x-slot>
+    <x-slot name="header">
+        <p class="tn-page-title">Workspace Settings</p>
+    </x-slot>
 
     <div class="py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white p-6 rounded shadow-sm">
+            <div class="tn-card">
                 <form method="POST" action="{{ route('workspaces.settings.update') }}" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     @method('PATCH')
@@ -15,7 +17,7 @@
 
                     <div>
                         <x-input-label value="Default invite role" />
-                        <select name="default_invite_role" class="rounded border-gray-300 w-full">
+                        <select name="default_invite_role" class="tn-input w-full">
                             <option value="member" @selected($workspace->default_invite_role === 'member')>member</option>
                             <option value="admin" @selected($workspace->default_invite_role === 'admin')>admin</option>
                         </select>
@@ -23,7 +25,7 @@
 
                     <div>
                         <x-input-label value="Timezone" />
-                        <select name="timezone" class="rounded border-gray-300 w-full">
+                        <select name="timezone" class="tn-input w-full">
                             @foreach($timezones as $timezone)
                                 <option value="{{ $timezone }}" @selected($workspace->timezone === $timezone)>{{ $timezone }}</option>
                             @endforeach
@@ -32,7 +34,7 @@
 
                     <div>
                         <x-input-label value="Logo" />
-                        <input type="file" name="logo" class="w-full text-sm" />
+                        <input type="file" name="logo" class="w-full text-sm text-slate-300" />
                     </div>
 
                     <div>
