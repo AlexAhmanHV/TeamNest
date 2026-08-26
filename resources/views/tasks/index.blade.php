@@ -1,28 +1,28 @@
 ﻿<x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800">Tasks: {{ $project->name }}</h2></x-slot>
+    <x-slot name="header"><p class="tn-page-title">Tasks: {{ $project->name }}</p></x-slot>
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex gap-3 text-sm">
-                <a href="{{ route('projects.show', $project) }}" class="text-gray-600">Project</a>
-                <a href="{{ route('tasks.trash', $project) }}" class="text-gray-600">Task Trash</a>
+                <a href="{{ route('projects.show', $project) }}" class="tn-link">Project</a>
+                <a href="{{ route('tasks.trash', $project) }}" class="tn-link">Task Trash</a>
             </div>
 
-            <div class="bg-white p-6 rounded shadow-sm">
-                <h3 class="font-semibold mb-3">Create Task</h3>
+            <div class="tn-card">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Create Task</h3>
                 <form method="POST" action="{{ route('tasks.store', $project) }}" class="grid md:grid-cols-2 gap-3">@csrf
                     <x-text-input name="title" placeholder="Title" required />
-                    <select name="priority" class="rounded border-gray-300"><option>low</option><option selected>med</option><option>high</option></select>
-                    <select name="status" class="rounded border-gray-300"><option selected>todo</option><option>doing</option><option>done</option></select>
-                    <input type="date" name="due_date" class="rounded border-gray-300" />
-                    <select name="assigned_to_user_id" class="rounded border-gray-300"><option value="">Unassigned</option>@foreach($members as $member)<option value="{{ $member->id }}">{{ $member->name }}</option>@endforeach</select>
-                    <textarea name="description" class="rounded border-gray-300 md:col-span-2" placeholder="Description"></textarea>
+                    <select name="priority" class="tn-input"><option>low</option><option selected>med</option><option>high</option></select>
+                    <select name="status" class="tn-input"><option selected>todo</option><option>doing</option><option>done</option></select>
+                    <input type="date" name="due_date" class="tn-input" />
+                    <select name="assigned_to_user_id" class="tn-input"><option value="">Unassigned</option>@foreach($members as $member)<option value="{{ $member->id }}">{{ $member->name }}</option>@endforeach</select>
+                    <textarea name="description" class="tn-input md:col-span-2" placeholder="Description"></textarea>
                     <x-primary-button>Create Task</x-primary-button>
                 </form>
             </div>
 
-            <div class="bg-white p-6 rounded shadow-sm">
-                <h3 class="font-semibold mb-4">Kanban Board</h3>
+            <div class="tn-card">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Kanban Board</h3>
                 <div
                     x-data="kanbanBoard('{{ csrf_token() }}', '{{ url('/tasks/__TASK__/move') }}')"
                     class="grid md:grid-cols-3 gap-4"
@@ -30,14 +30,14 @@
                     @foreach (['todo' => 'To Do', 'doing' => 'Doing', 'done' => 'Done'] as $columnKey => $columnLabel)
                         <section
                             class="rounded-xl border p-3 min-h-[340px]"
-                            :class="dragOverStatus === '{{ $columnKey }}' ? 'border-cyan-500 bg-cyan-50' : 'border-gray-200 bg-gray-50'"
+                            :class="dragOverStatus === '{{ $columnKey }}' ? 'border-brand-500 bg-brand-500/10' : 'border-slate-800 bg-slate-900/40'"
                             @dragover.prevent="dragOverStatus = '{{ $columnKey }}'"
                             @dragleave="dragOverStatus = null"
                             @drop.prevent="dropTo('{{ $columnKey }}')"
                         >
                             <div class="mb-3 flex items-center justify-between">
-                                <h4 class="text-sm font-semibold text-gray-700">{{ $columnLabel }}</h4>
-                                <span class="text-xs text-gray-500" x-ref="count-{{ $columnKey }}">{{ ($kanbanTasksByStatus[$columnKey] ?? collect())->count() }}</span>
+                                <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-400">{{ $columnLabel }}</h4>
+                                <span class="tn-badge-neutral" x-ref="count-{{ $columnKey }}">{{ ($kanbanTasksByStatus[$columnKey] ?? collect())->count() }}</span>
                             </div>
 
                             <div class="space-y-2" x-ref="column-{{ $columnKey }}">
@@ -46,14 +46,14 @@
                                         id="kanban-task-{{ $task->id }}"
                                         draggable="true"
                                         @dragstart="startDrag({ id: {{ $task->id }}, status: '{{ $task->status->value }}' })"
-                                        class="cursor-grab active:cursor-grabbing rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
+                                        class="cursor-grab active:cursor-grabbing rounded-lg border border-slate-800 bg-slate-900 p-3 shadow-sm hover:border-slate-700"
                                     >
-                                        <div class="font-medium text-sm text-gray-800">{{ $task->title }}</div>
-                                        <div class="mt-1 text-xs text-gray-500">{{ strtoupper($task->priority->value) }} @if($task->due_date) • {{ $task->due_date->toDateString() }} @endif</div>
-                                        <div class="mt-2 text-xs text-gray-600">{{ $task->assignee?->name ?? 'Unassigned' }}</div>
+                                        <div class="font-medium text-sm text-white">{{ $task->title }}</div>
+                                        <div class="mt-1 text-xs text-slate-500">{{ strtoupper($task->priority->value) }} @if($task->due_date) • {{ $task->due_date->toDateString() }} @endif</div>
+                                        <div class="mt-2 text-xs text-slate-400">{{ $task->assignee?->name ?? 'Unassigned' }}</div>
                                     </article>
                                 @empty
-                                    <p class="text-xs text-gray-400">No tasks.</p>
+                                    <p class="text-xs text-slate-600">No tasks.</p>
                                 @endforelse
                             </div>
                         </section>
@@ -61,60 +61,60 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded shadow-sm">
+            <div class="tn-card">
                 <div class="flex flex-wrap gap-2 mb-4">
                     @forelse($savedViews as $savedView)
-                        <a href="{{ route('tasks.index', $project).'?'.http_build_query($savedView->filters ?? []) }}" class="text-xs px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">{{ $savedView->name }}</a>
-                        <form method="POST" action="{{ route('taskViews.destroy', $savedView) }}">@csrf @method('DELETE')<button class="text-xs text-red-600">x</button></form>
+                        <a href="{{ route('tasks.index', $project).'?'.http_build_query($savedView->filters ?? []) }}" class="tn-badge-neutral hover:bg-slate-700">{{ $savedView->name }}</a>
+                        <form method="POST" action="{{ route('taskViews.destroy', $savedView) }}">@csrf @method('DELETE')<button class="text-xs text-rose-400">x</button></form>
                     @empty
-                        <span class="text-xs text-gray-500">No saved views yet.</span>
+                        <span class="text-xs text-slate-500">No saved views yet.</span>
                     @endforelse
                 </div>
 
                 <form method="POST" action="{{ route('taskViews.store', $project) }}" class="grid md:grid-cols-7 gap-2 mb-4">
                     @csrf
-                    <input name="name" class="rounded border-gray-300" placeholder="Save current filters as..." required>
+                    <input name="name" class="tn-input" placeholder="Save current filters as..." required>
                     <input type="hidden" name="q" value="{{ request('q') }}">
                     <input type="hidden" name="status" value="{{ request('status') }}">
                     <input type="hidden" name="priority" value="{{ request('priority') }}">
                     <input type="hidden" name="assignee" value="{{ request('assignee') }}">
                     <input type="hidden" name="overdue" value="{{ request('overdue') }}">
-                    <button class="px-3 py-2 bg-gray-900 text-white rounded md:col-span-2">Save View</button>
+                    <button class="tn-btn-secondary md:col-span-2">Save View</button>
                 </form>
 
                 <form method="GET" class="grid md:grid-cols-6 gap-2 mb-4">
-                    <input name="q" value="{{ request('q') }}" class="rounded border-gray-300" placeholder="Search" />
-                    <select name="status" class="rounded border-gray-300"><option value="">Any status</option><option value="todo" @selected(request('status')==='todo')>todo</option><option value="doing" @selected(request('status')==='doing')>doing</option><option value="done" @selected(request('status')==='done')>done</option></select>
-                    <select name="priority" class="rounded border-gray-300"><option value="">Any priority</option><option value="low" @selected(request('priority')==='low')>low</option><option value="med" @selected(request('priority')==='med')>med</option><option value="high" @selected(request('priority')==='high')>high</option></select>
-                    <select name="assignee" class="rounded border-gray-300"><option value="">Any assignee</option><option value="me" @selected(request('assignee')==='me')>me</option><option value="unassigned" @selected(request('assignee')==='unassigned')>unassigned</option>@foreach($members as $member)<option value="{{ $member->id }}" @selected(request('assignee')==(string)$member->id)>{{ $member->name }}</option>@endforeach</select>
-                    <select name="overdue" class="rounded border-gray-300"><option value="">Not overdue filter</option><option value="1" @selected(request('overdue')==='1')>overdue only</option></select>
-                    <button class="px-3 py-2 bg-gray-900 text-white rounded">Apply</button>
+                    <input name="q" value="{{ request('q') }}" class="tn-input" placeholder="Search" />
+                    <select name="status" class="tn-input"><option value="">Any status</option><option value="todo" @selected(request('status')==='todo')>todo</option><option value="doing" @selected(request('status')==='doing')>doing</option><option value="done" @selected(request('status')==='done')>done</option></select>
+                    <select name="priority" class="tn-input"><option value="">Any priority</option><option value="low" @selected(request('priority')==='low')>low</option><option value="med" @selected(request('priority')==='med')>med</option><option value="high" @selected(request('priority')==='high')>high</option></select>
+                    <select name="assignee" class="tn-input"><option value="">Any assignee</option><option value="me" @selected(request('assignee')==='me')>me</option><option value="unassigned" @selected(request('assignee')==='unassigned')>unassigned</option>@foreach($members as $member)<option value="{{ $member->id }}" @selected(request('assignee')==(string)$member->id)>{{ $member->name }}</option>@endforeach</select>
+                    <select name="overdue" class="tn-input"><option value="">Not overdue filter</option><option value="1" @selected(request('overdue')==='1')>overdue only</option></select>
+                    <button class="tn-btn-secondary">Apply</button>
                 </form>
 
                 <div class="mb-3 flex flex-wrap gap-2 items-center">
-                    <select id="bulk-action" class="rounded border-gray-300 text-sm" required>
+                    <select id="bulk-action" class="tn-input text-sm" required>
                         <option value="">Bulk action</option>
                         <option value="status">Set status</option>
                         <option value="priority">Set priority</option>
                         <option value="assign">Set assignee</option>
                         <option value="delete">Delete</option>
                     </select>
-                    <select id="bulk-status" class="rounded border-gray-300 text-sm"><option value="">status...</option><option>todo</option><option>doing</option><option>done</option></select>
-                    <select id="bulk-priority" class="rounded border-gray-300 text-sm"><option value="">priority...</option><option>low</option><option>med</option><option>high</option></select>
-                    <select id="bulk-assignee" class="rounded border-gray-300 text-sm"><option value="">assignee...</option>@foreach($members as $member)<option value="{{ $member->id }}">{{ $member->name }}</option>@endforeach</select>
-                    <button type="button" onclick="submitBulkAction()" class="px-3 py-2 bg-gray-800 text-white rounded text-sm">Apply to selected</button>
+                    <select id="bulk-status" class="tn-input text-sm"><option value="">status...</option><option>todo</option><option>doing</option><option>done</option></select>
+                    <select id="bulk-priority" class="tn-input text-sm"><option value="">priority...</option><option>low</option><option>med</option><option>high</option></select>
+                    <select id="bulk-assignee" class="tn-input text-sm"><option value="">assignee...</option>@foreach($members as $member)<option value="{{ $member->id }}">{{ $member->name }}</option>@endforeach</select>
+                    <button type="button" onclick="submitBulkAction()" class="tn-btn-secondary text-sm">Apply to selected</button>
                 </div>
 
-                <table class="w-full text-sm"><thead><tr class="text-left"><th><input type="checkbox" onclick="document.querySelectorAll('.bulk-task').forEach(cb => cb.checked = this.checked)"></th><th>Title</th><th>Status</th><th>Priority</th><th>Due</th><th>Assignee</th><th>Actions</th></tr></thead><tbody>
+                <table class="tn-table"><thead><tr><th><input type="checkbox" onclick="document.querySelectorAll('.bulk-task').forEach(cb => cb.checked = this.checked)"></th><th>Title</th><th>Status</th><th>Priority</th><th>Due</th><th>Assignee</th><th>Actions</th></tr></thead><tbody>
                     @foreach($tasks as $task)
-                    <tr class="border-t align-top"><td class="py-2"><input type="checkbox" class="bulk-task" name="task_ids[]" value="{{ $task->id }}"></td><td class="py-2"><a class="text-cyan-700" href="{{ route('tasks.show', $task) }}">{{ $task->title }}</a></td><td>{{ $task->status->value }}</td><td>{{ $task->priority->value }}</td><td>{{ $task->due_date?->toDateString() }}</td><td>{{ $task->assignee?->name ?? 'Unassigned' }}</td>
-                        <td class="py-2 space-y-2">
+                    <tr class="align-top"><td><input type="checkbox" class="bulk-task" name="task_ids[]" value="{{ $task->id }}"></td><td><a class="tn-link" href="{{ route('tasks.show', $task) }}">{{ $task->title }}</a></td><td><span class="tn-badge-neutral">{{ $task->status->value }}</span></td><td>{{ $task->priority->value }}</td><td>{{ $task->due_date?->toDateString() }}</td><td>{{ $task->assignee?->name ?? 'Unassigned' }}</td>
+                        <td class="space-y-2">
                             <form method="POST" action="{{ route('tasks.assign', $task) }}">@csrf
-                                <select name="assigned_to_user_id" class="rounded border-gray-300 text-xs" onchange="this.form.submit()"><option value="">Unassigned</option>@foreach($members as $member)<option value="{{ $member->id }}" @selected($task->assigned_to_user_id===$member->id)>{{ $member->name }}</option>@endforeach</select>
+                                <select name="assigned_to_user_id" class="tn-input text-xs py-1" onchange="this.form.submit()"><option value="">Unassigned</option>@foreach($members as $member)<option value="{{ $member->id }}" @selected($task->assigned_to_user_id===$member->id)>{{ $member->name }}</option>@endforeach</select>
                             </form>
                             <div class="flex gap-2 text-xs">
-                                <form method="POST" action="{{ route('tasks.complete', $task) }}">@csrf <button class="text-green-600">Done</button></form>
-                                <form method="POST" action="{{ route('tasks.destroy', $task) }}">@csrf @method('DELETE') <button class="text-red-600">Delete</button></form>
+                                <form method="POST" action="{{ route('tasks.complete', $task) }}">@csrf <button class="text-emerald-400 hover:text-emerald-300">Done</button></form>
+                                <form method="POST" action="{{ route('tasks.destroy', $task) }}">@csrf @method('DELETE') <button class="text-rose-400 hover:text-rose-300">Delete</button></form>
                             </div>
                         </td>
                     </tr>

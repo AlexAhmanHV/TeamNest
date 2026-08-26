@@ -1,12 +1,12 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800">Task Trash: {{ $project->name }}</h2></x-slot>
-    <div class="py-8"><div class="max-w-6xl mx-auto sm:px-6 lg:px-8 bg-white p-6 rounded shadow-sm">
-        <a href="{{ route('tasks.index', $project) }}" class="text-sm text-gray-600">Back to Tasks</a>
-        <table class="w-full text-sm mt-4"><thead><tr class="text-left"><th>Title</th><th>Deleted At</th><th>Actions</th></tr></thead><tbody>
+    <x-slot name="header"><p class="tn-page-title">Task Trash: {{ $project->name }}</p></x-slot>
+    <div class="py-8"><div class="max-w-6xl mx-auto sm:px-6 lg:px-8 tn-card">
+        <a href="{{ route('tasks.index', $project) }}" class="text-sm tn-link">Back to Tasks</a>
+        <table class="tn-table mt-4"><thead><tr><th>Title</th><th>Deleted At</th><th>Actions</th></tr></thead><tbody>
             @foreach($tasks as $task)
-            <tr class="border-t"><td class="py-2">{{ $task->title }}</td><td>{{ $task->deleted_at }}</td><td class="flex gap-2 py-2">
-                <form method="POST" action="{{ route('tasks.restore', $task) }}">@csrf <button class="text-blue-600">Restore</button></form>
-                <form method="POST" action="{{ route('tasks.forceDelete', $task) }}">@csrf @method('DELETE') <button class="text-red-600">Force Delete</button></form>
+            <tr><td>{{ $task->title }}</td><td>{{ $task->deleted_at }}</td><td class="flex gap-2">
+                <form method="POST" action="{{ route('tasks.restore', $task) }}">@csrf <button class="tn-link">Restore</button></form>
+                <form method="POST" action="{{ route('tasks.forceDelete', $task) }}">@csrf @method('DELETE') <button class="text-rose-400 hover:text-rose-300">Force Delete</button></form>
             </td></tr>
             @endforeach
         </tbody></table>
